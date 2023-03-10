@@ -5,7 +5,7 @@ class Mutations::CreateTag < Mutations::BaseMutation
   field :errors, [String], null: false
 
   def resolve(name:)
-    tag = Tag.new(name: name)
+    tag = Tag.find_or_create_by(name: name)
 
     if tag.save
       { tag: tag, errors: [] }

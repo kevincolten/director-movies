@@ -19,10 +19,21 @@ module Types
       Director.find(id)
     end
 
-    field :movies, [Types::MovieType], null: false
-    def movies
-      p
-      Movie.all
+    field :movies, [Types::MovieType], null: false do
+      argument :options, GraphQL::Types::JSON, required: false
+    end
+    def movies(options: nil)
+      movies = Movie.all
+      if options && options['order']
+        movies = movies.order(options['order'])
+      end
+      if options && options['like']
+        movies = movies.where("title LIKE ?", "%#{options['like']}%")
+      end
+      if options && options['rating']
+        movies = movies.where("rating = ?", options['rating'])
+      end
+      movies
     end
 
     field :movie, Types::MovieType, null: false do
